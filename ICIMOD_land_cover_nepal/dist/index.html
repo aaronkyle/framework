@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ICIMOD | Land Cover of Nepal 2000-2019</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.css">
+<link rel="preload" as="style" href="./_observablehq/stdlib/inputs.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.css">
+<link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.css">
+<link rel="modulepreload" href="./_observablehq/client.js">
+<link rel="modulepreload" href="./_observablehq/runtime.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.js">
+<link rel="modulepreload" href="./_npm/jszip@3.10.1/_esm.js">
+<link rel="modulepreload" href="./_npm/geotiff@2.1.3/_esm.js">
+<link rel="modulepreload" href="./_npm/htl@0.3.1/_esm.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
+<link rel="modulepreload" href="./_npm/isoformat@0.2.1/_esm.js">
+<link rel="modulepreload" href="./_npm/@petamoriken/float16@3.8.7/_esm.js">
+<link rel="modulepreload" href="./_npm/xml-utils@1.10.1/get-attribute.js._esm.js">
+<link rel="modulepreload" href="./_npm/xml-utils@1.10.1/find-tags-by-name.js._esm.js">
+<link rel="modulepreload" href="./_npm/quick-lru@6.1.2/_esm.js">
+<link rel="icon" href="./_file/observable.1af93621.png" type="image/png" sizes="32x32">
+<script type="module">
+
+import {define} from "./_observablehq/client.js";
+import {registerFile} from "./_observablehq/stdlib.js";
+
+registerFile("./image.png", {"name":"./image.png","mimeType":"image/png","path":"./_file/image.a194dd55.png","lastModified":1685616784982});
+
+define({id: "3f5230aa", inputs: ["view","Inputs","archives"], outputs: ["archive_select"], body: (view,Inputs,archives) => {
+const archive_select = view(Inputs.select(archives, {
+  multiple: false,
+  label: "Select Archive",
+  value: archives.slice(-1)[0],
+  format: (url) => {
+    // From: https://befused.com/javascript/get-filename-url/ 
+    return url.substring(url.lastIndexOf("/") + 1);
+  }
+}))
+return {archive_select};
+}});
+
+define({id: "682d4bd2", inputs: ["location"], outputs: ["count","Id","uid","context2d"], body: (location) => {
+var count = 0;
+
+function Id(id) {
+  this.id = id;
+  this.href = new URL(`#${id}`, location) + "";
+}
+
+function uid(name) {
+  return new Id("O-" + (name == null ? "" : name + "-") + ++count);
+}
+
+function context2d(width, height, dpi) {
+  if (dpi == null) dpi = devicePixelRatio;
+  var canvas = document.createElement("canvas");
+  canvas.width = width * dpi;
+  canvas.height = height * dpi;
+  canvas.style.width = width + "px";
+  canvas.style.maxWidth = "100%";
+  var context = canvas.getContext("2d");
+  context.scale(dpi, dpi);
+  return context;
+}
+return {count,Id,uid,context2d};
+}});
+
+define({id: "22c6af1b", inputs: ["context2d","width","height","plotty","image_data","display"], outputs: ["canvas_upper"], body: (context2d,width,height,plotty,image_data,display) => {
+const canvas_upper = (() => {
+  const context = context2d(width, height);
+
+  //context.style.maxWidth = "100%";
+
+  const plot = new plotty.plot({
+    context,
+    data: image_data[0],
+    width,
+    height,
+    domain: [0, 11],
+    colorScale: "viridis"
+  });
+
+  plot.render();
+
+  return display(context.canvas);
+})()
+return {canvas_upper};
+}});
+
+define({id: "d5561a04", inputs: ["view","Inputs","featureBitmap"], outputs: ["feature"], body: (view,Inputs,featureBitmap) => {
+const feature = view(Inputs.checkbox(featureBitmap, {
+  label: "Feature",
+  value: [featureBitmap.get("Forest")]
+}))
+return {feature};
+}});
+
+define({id: "16106245", inputs: ["context2d","width","height","plotty","featureArray","display"], outputs: ["canvas_lower"], body: (context2d,width,height,plotty,featureArray,display) => {
+const canvas_lower = (() => {
+  const context = context2d(width, height);
+
+  // context.style.maxWidth = "100%";
+
+  const plot = new plotty.plot({
+    context,
+    data: featureArray,
+    width,
+    height,
+    domain: [1, 0],
+    colorScale: "greys"
+  });
+
+  plot.render();
+
+  display(context.canvas);
+})()
+return {canvas_lower};
+}});
+
+define({id: "0b9bf8d5", outputs: ["archives"], body: () => {
+const archives = [
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2000.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2001.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2002.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2003.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2004.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2005.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2006.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2007.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2008.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2009.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2010.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2011.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2013.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2014.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2015.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2016.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2017.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2018.zip",
+  "https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2019.zip",
+]
+return {archives};
+}});
+
+define({id: "5db8f139", outputs: ["JSZip"], body: async () => {
+const {default: JSZip} = await import("./_npm/jszip@3.10.1/_esm.js");
+
+return {JSZip};
+}});
+
+define({id: "cccb8739", inputs: ["display","JSZip"], outputs: ["zip"], body: (display,JSZip) => {
+const zip = display(new JSZip());
+return {zip};
+}});
+
+define({id: "7b5d96d0", inputs: ["display","zip"], outputs: ["zipreader"], body: (display,zip) => {
+const zipreader = display((fileDescriptor, { type = "string" } = {}) =>
+  fileDescriptor
+    .arrayBuffer()
+    .then(d => zip.loadAsync(d))
+    .then(
+      ({ files }) =>
+        new Map(Object.keys(files).map(f => [f, files[f].async(type)]))
+    ))
+return {zipreader};
+}});
+
+define({id: "5bc7714d", inputs: ["display","archive_select","zipreader"], outputs: ["archive_reader"], body: async (display,archive_select,zipreader) => {
+const archive_reader = display(await fetch(archive_select).then((z) => zipreader(z, { type: "arraybuffer" })))
+return {archive_reader};
+}});
+
+define({id: "8a80bb60", inputs: ["display","archive_reader","extractYearFromURL","archive_select"], outputs: ["tiff_file_buffer"], body: async (display,archive_reader,extractYearFromURL,archive_select) => {
+const tiff_file_buffer = display(await archive_reader.get("data/LandCover_NP_" + extractYearFromURL(archive_select) + ".tif"))
+return {tiff_file_buffer};
+}});
+
+define({id: "943defbc", inputs: ["display","GeoTIFF","tiff_file_buffer"], outputs: ["tiff"], body: async (display,GeoTIFF,tiff_file_buffer) => {
+const tiff = display(await GeoTIFF.fromArrayBuffer(tiff_file_buffer))
+return {tiff};
+}});
+
+define({id: "599cf657", outputs: ["extractYearFromURL"], body: () => {
+function extractYearFromURL(url) {
+  var parts = url.split('/');
+  var fileName = parts[parts.length - 1];
+  var yearMatch = fileName.match(/\d{4}/);
+  
+  if (yearMatch) {
+    return yearMatch[0];
+  }
+  
+  return null; // or any other default value you prefer
+}
+return {extractYearFromURL};
+}});
+
+define({id: "1ffe8df5", inputs: ["display","tiff"], outputs: ["image"], body: async (display,tiff) => {
+const image = display(await tiff.getImage())
+return {image};
+}});
+
+define({id: "b29d09d3", inputs: ["display","image","width","height"], outputs: ["image_data"], body: async (display,image,width,height) => {
+const image_data = display(await image.readRasters({ width, height }))
+return {image_data};
+}});
+
+define({id: "5fa98af6", inputs: ["display","image"], outputs: ["imageAspectRatio"], body: (display,image) => {
+const imageAspectRatio = display(image.getWidth() / image.getHeight())
+return {imageAspectRatio};
+}});
+
+define({id: "66658ec1", inputs: ["display","width","imageAspectRatio"], outputs: ["height"], body: (display,width,imageAspectRatio) => {
+const height = display(Math.floor(width / imageAspectRatio))
+return {height};
+}});
+
+define({id: "25a65315", outputs: ["GeoTIFF"], body: async () => {
+const GeoTIFF = await import("./_npm/geotiff@2.1.3/_esm.js");
+
+return {GeoTIFF};
+}});
+
+define({id: "9ce0c9d5", inputs: ["display"], outputs: ["plotty"], body: async (display) => {
+const plotty = display(await import("https://cdn.skypack.dev/plotty@0.4.9?min"))
+return {plotty};
+}});
+
+define({id: "98328bd5", inputs: ["display","image_data","feature"], outputs: ["featureArray"], body: (display,image_data,feature) => {
+const featureArray = display(image_data[0].map((d) => (feature.includes(d) ? 1 : 0)))
+return {featureArray};
+}});
+
+define({id: "6660dbb9", outputs: ["featureBitmap"], body: () => {
+const featureBitmap = new Map([
+  ["Waterbody", 1],
+  ["Glacier", 2],
+  ["Snow", 3],
+  ["Forest", 4],
+  ["Riverbed", 5],
+  ["Built-up area", 6],
+  ["Cropland", 7],
+  ["Bare soil", 8],
+  ["Bare rock", 9],
+  ["Grassland", 10],
+  ["Other wooded land", 11]
+])
+return {featureBitmap};
+}});
+
+define({id: "1a036658", inputs: ["html","FileAttachment","display"], body: async (html,FileAttachment,display) => {
+display(await(
+html.fragment`<!--original: "http://rds.icimod.org/Content/metadataImage/1972700-1972799/1972729/public/MicrosoftTeams-image.png"-->
+<figure>
+  <img src=${await FileAttachment("./image.png").url()} alt="Map showing land usage and cover of Nepal">
+  <figcaption>Land cover of Nepal. <strong>Credit:</strong> <a href="http://rds.icimod.org/Content/metadataImage/1972700-1972799/1972729/public/MicrosoftTeams-image.png">ICIMOD</a></figcaption>
+</figure>
+`
+))
+}});
+
+define({id: "4791f072", inputs: ["html","display"], body: async (html,display) => {
+display(await(
+html.fragment`<div class="metadata-table">
+	<div class="two-tables info">
+		<table class="table table-striped">
+      <thead>
+				<tr>
+					<th colspan="2" class="upper">Metadata Record Info</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="col-md-2 col-sm-2">Schema</td>
+					<td class="col-md-10 col-sm-10">iso19139</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">Purpose</td>
+					<td class="col-md-10">
+						The annual land cover data of Nepal (2000–2019) developed using a harmonized and consistent classification system will support assessment and monitoring of land cover change in the country and will serve as key
+						dataset in various thematic applications.
+					</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Descriptive Keyword</td>
+					<td class="col-md-10">
+						<span> Land cover, Land use, GIS, spatial data, Landsat, GEE, Google Earth Engine, Earth Observation, NLCMS (theme)</span>
+						<span> Nepal, FRTC, ICIMOD, SERVIR-HKH (place)</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Language</td>
+					<td class="col-md-10" style="text-transform: capitalize">eng</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Charset</td>
+					<td class="col-md-10" style="text-transform: capitalize">utf8</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Hierarchy Level</td>
+					<td class="col-md-10">dataset</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Date</td>
+					<td class="col-md-10">2022-04-21T15:48:22</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Standard Name</td>
+					<td class="col-md-10">North American Profile of ISO 19115:2003</td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="metadata table table-striped" style="">
+			<thead>
+				<tr>
+					<th colspan="2" class="upper">Contact</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="align-left">
+					<td class="col-md-2">Name</td>
+					<td class="col-md-4">Mr. Raja Ram Aryal</td>
+					<td class="col-md-2 odd">Email</td>
+					<td class="col-md-4">raja.aryal@nepal.gov.np</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2 odd">Organization Name</td>
+					<td class="col-md-4">FRTC</td>
+					<td class="col-md-2 odd">Voice</td>
+					<td class="col-md-4"></td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2 odd">Position name</td>
+					<td class="col-md-4"></td>
+					<td class="col-md-2 odd">Address</td>
+					<td class="col-md-4"></td>
+				</tr>
+				<tr>
+					<td class="col-md-2 odd">Role</td>
+					<td class="col-md-4">author</td>
+					<td class="col-md-2 odd"></td>
+					<td class="col-md-4"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="clear sep"></div>
+		<table class="table table-striped" style="">
+			<thead>
+				<tr>
+					<th colspan="2" class="upper">
+						Identification Info
+					</th>
+				</tr>
+			</thead>
+			<tbody style="text-align:left">
+				<tr class="">
+					<td class="col-md-2">Title</td>
+					<td class="col-md-10">Land cover of Nepal</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Date</td>
+					<td class="col-md-10">2021-02-10</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Date Type</td>
+					<td class="col-md-10">publication</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Purpose</td>
+					<td class="col-md-10">
+						The annual land cover data of Nepal (2000–2019) developed using a harmonized and consistent classification system will support assessment and monitoring of land cover change in the country and will serve as key
+						dataset in various thematic applications.
+					</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">Status</td>
+					<td class="col-md-10">completed</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Charset</td>
+					<td class="col-md-10" style="text-transform: capitalize">
+						utf8
+					</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Topic Category</td>
+					<td class="col-md-10">
+						geoscientificInformation
+					</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Spatial Representation Type</td>
+					<td class="col-md-10">
+						grid
+					</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Spatial Resolution</td>
+					<td class="col-md-10">
+						30
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<table class="metadata table table-striped" style="">
+			<thead>
+				<tr>
+					<th colspan="2" class="upper">Cited Responsible Parties</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="col-md-2">Name</td>
+					<td class="col-md-4">Mr. Raja Ram Aryal</td>
+					<td class="col-md-2">Email</td>
+					<td class="col-md-4">raja.aryal@nepal.gov.np</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">Organization Name</td>
+					<td class="col-md-4">FRTC</td>
+					<td class="col-md-2">Voice</td>
+					<td class="col-md-4"></td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">Position name</td>
+					<td class="col-md-4"></td>
+					<td class="col-md-2">Address</td>
+					<td class="col-md-4">Nepal</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Role</td>
+					<td class="col-md-4">author</td>
+					<td class="col-md-2"></td>
+					<td class="col-md-4"></td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="metadata table table-striped" style="">
+			<thead>
+				<tr></tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="col-md-2">Name</td>
+					<td class="col-md-4">Mr. Kabir Uddin</td>
+					<td class="col-md-2">Email</td>
+					<td class="col-md-4">kabir.uddin@icimod.org</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">Organization Name</td>
+					<td class="col-md-4">ICIMOD</td>
+					<td class="col-md-2">Voice</td>
+					<td class="col-md-4">977-1-5275222</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">Position name</td>
+					<td class="col-md-4">GIS and Remote Sensing Specialist</td>
+					<td class="col-md-2">Address</td>
+					<td class="col-md-4"></td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Role</td>
+					<td class="col-md-4">author</td>
+					<td class="col-md-2"></td>
+					<td class="col-md-4"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="clear sep"></div>
+
+		<div class="clear sep"></div>
+		<table class="metadata table table-striped">
+			<thead>
+				<tr>
+					<th colspan="2" class="upper">Geographic Extent</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="col-md-2">Geographic Extent East</td>
+					<td class="col-md-4">88.169</td>
+
+					<td class="col-md-2">Geographic Extent West</td>
+					<td class="col-md-4">80.03</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">Geographic Extent North</td>
+					<td class="col-md-4">30.417</td>
+					<td class="col-md-2">Geographic Extent South</td>
+					<td class="col-md-4">26.344</td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th colspan="2" class="upper">Resource Maintenance Information</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="col-md-2">Maintenance and update frequency</td>
+					<td class="col-md-10" style="text-transform: capitalize; font-weight: bold">asNeeded</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">User Defined Maintenance Frequency</td>
+					<td class="col-md-10">
+						<span style="text-transform: capitalize;font-weight: bold"> </span>
+					</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">Date of Next Update</td>
+					<td class="col-md-10">
+						<span style="text-transform: capitalize;font-weight: bold"> </span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="clear sep"></div>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th colspan="2" class="upper">Legal Constraints</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="col-md-2">Use Limitation</td>
+					<td class="col-md-10">Free to use with attribution to the source. Suggested citation: FRTC. (2022). Land cover of Nepal [Data set]. FRTC. https://doi.org/10.26066/RDS.1972729</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2">Access Constraints</td>
+					<td class="col-md-10">copyright</td>
+				</tr>
+				<tr>
+					<td class="col-md-2">Use Constraints</td>
+					<td class="col-md-10">copyright</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="clear sep"></div>
+	<div class="two-tables info">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th colspan="2" class="upper">Reference System Information</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="col-md-2">Code</td>
+					<td class="col-md-10">Lambert Conformal Conic</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="clear sep"></div>
+
+	<div class="two-tables info">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th colspan="2" class="upper">Data Quality Info</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="col-md-2">Hierarchy level</td>
+					<td class="col-md-10">dataset</td>
+				</tr>
+
+				<tr></tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="two-tables info">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th colspan="2" class="upper">Distributor Info</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="col-md-2 odd">Email</td>
+					<td class="col-md-4">metadata@icimod.org</td>
+					<td class="col-md-2 odd">Organization Name</td>
+					<td class="col-md-4">ICIMOD</td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2 odd">Voice</td>
+					<td class="col-md-4"></td>
+					<td class="col-md-2 odd">Position name</td>
+					<td class="col-md-4"></td>
+				</tr>
+
+				<tr>
+					<td class="col-md-2 odd">Address</td>
+					<td class="col-md-4"></td>
+					<td class="col-md-2 odd">Role</td>
+					<td class="col-md-4">distributor</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+</div>
+`
+))
+}});
+
+</script>
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+</nav>
+</aside>
+<div id="observablehq-center">
+<main id="observablehq-main" class="observablehq">
+<h1 id="icimod-%7C-land-cover-of-nepal-2000-2019" tabindex="-1"><a class="observablehq-header-anchor" href="#icimod-%7C-land-cover-of-nepal-2000-2019">ICIMOD | Land Cover of Nepal 2000-2019</a></h1>
+<p><strong>Data Source</strong> <a href="http://rds.icimod.org/Home/DataDetail?metadataId=1972729" target="_blank" rel="noopener noreferrer">ICIMOD Regional Database System</a>.
+<br><strong>Archive Version Date:</strong> 4/21/2022 3:48:22 PM.</p>
+<p>The annual land cover data of Nepal (2000-2019) have been created through the National Land Cover Monitoring System (NLCMS) for Nepal. The system uses freely available remote-sensing data (Landsat) and a cloud-based machine learning architecture in the Google Earth Engine (GEE) platform to generate land cover maps on an annual basis using a harmonized and consistent classification system. The NLCMS is developed by the Forest Research and Training Centre (FRTC), Ministry of Forests and Environment, Government of Nepal with support from the International Centre for Integrated Mountain Development (ICIMOD) through SERVIR Hindu Kush Himalaya (SERVIR-HKH), a joint initiative in partnership with the National Aeronautics and Space Administration (NASA) and the United States Agency for International Development (USAID). Collaborators include SERVIR–Mekong at the Asian Disaster Preparedness Center (ADPC), SilvaCarbon, Global Land Analysis and Discovery (GLAD) group at the University of Maryland, and the US Forest Service.</p>
+<hr>
+<div class="observablehq observablehq--block"><!--:3f5230aa:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> archive_select = <span class="hljs-title function_">view</span>(<span class="hljs-title class_">Inputs</span>.<span class="hljs-title function_">select</span>(archives, {
+  <span class="hljs-attr">multiple</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">label</span>: <span class="hljs-string">"Select Archive"</span>,
+  <span class="hljs-attr">value</span>: archives.<span class="hljs-title function_">slice</span>(-<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>],
+  <span class="hljs-attr">format</span>: <span class="hljs-function">(<span class="hljs-params">url</span>) =&gt;</span> {
+    <span class="hljs-comment">// From: https://befused.com/javascript/get-filename-url/ </span>
+    <span class="hljs-keyword">return</span> url.<span class="hljs-title function_">substring</span>(url.<span class="hljs-title function_">lastIndexOf</span>(<span class="hljs-string">"/"</span>) + <span class="hljs-number">1</span>);
+  }
+}))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:682d4bd2:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">var</span> count = <span class="hljs-number">0</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Id</span>(<span class="hljs-params">id</span>) {
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">id</span> = id;
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">href</span> = <span class="hljs-keyword">new</span> <span class="hljs-title function_">URL</span>(<span class="hljs-string">`#<span class="hljs-subst">${id}</span>`</span>, location) + <span class="hljs-string">""</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">uid</span>(<span class="hljs-params">name</span>) {
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Id</span>(<span class="hljs-string">"O-"</span> + (name == <span class="hljs-literal">null</span> ? <span class="hljs-string">""</span> : name + <span class="hljs-string">"-"</span>) + ++count);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">context2d</span>(<span class="hljs-params">width, height, dpi</span>) {
+  <span class="hljs-keyword">if</span> (dpi == <span class="hljs-literal">null</span>) dpi = devicePixelRatio;
+  <span class="hljs-keyword">var</span> canvas = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">"canvas"</span>);
+  canvas.<span class="hljs-property">width</span> = width * dpi;
+  canvas.<span class="hljs-property">height</span> = height * dpi;
+  canvas.<span class="hljs-property">style</span>.<span class="hljs-property">width</span> = width + <span class="hljs-string">"px"</span>;
+  canvas.<span class="hljs-property">style</span>.<span class="hljs-property">maxWidth</span> = <span class="hljs-string">"100%"</span>;
+  <span class="hljs-keyword">var</span> context = canvas.<span class="hljs-title function_">getContext</span>(<span class="hljs-string">"2d"</span>);
+  context.<span class="hljs-title function_">scale</span>(dpi, dpi);
+  <span class="hljs-keyword">return</span> context;
+}
+</code></pre>
+<div class="observablehq observablehq--block"><!--:22c6af1b:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> canvas_upper = (<span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> context = <span class="hljs-title function_">context2d</span>(width, height);
+
+  <span class="hljs-comment">//context.style.maxWidth = "100%";</span>
+
+  <span class="hljs-keyword">const</span> plot = <span class="hljs-keyword">new</span> plotty.<span class="hljs-title function_">plot</span>({
+    context,
+    <span class="hljs-attr">data</span>: image_data[<span class="hljs-number">0</span>],
+    width,
+    height,
+    <span class="hljs-attr">domain</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">11</span>],
+    <span class="hljs-attr">colorScale</span>: <span class="hljs-string">"viridis"</span>
+  });
+
+  plot.<span class="hljs-title function_">render</span>();
+
+  <span class="hljs-keyword">return</span> <span class="hljs-title function_">display</span>(context.<span class="hljs-property">canvas</span>);
+})()
+</code></pre>
+<hr>
+<div class="observablehq observablehq--block"><!--:d5561a04:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> feature = <span class="hljs-title function_">view</span>(<span class="hljs-title class_">Inputs</span>.<span class="hljs-title function_">checkbox</span>(featureBitmap, {
+  <span class="hljs-attr">label</span>: <span class="hljs-string">"Feature"</span>,
+  <span class="hljs-attr">value</span>: [featureBitmap.<span class="hljs-title function_">get</span>(<span class="hljs-string">"Forest"</span>)]
+}))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:16106245:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> canvas_lower = (<span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> context = <span class="hljs-title function_">context2d</span>(width, height);
+
+  <span class="hljs-comment">// context.style.maxWidth = "100%";</span>
+
+  <span class="hljs-keyword">const</span> plot = <span class="hljs-keyword">new</span> plotty.<span class="hljs-title function_">plot</span>({
+    context,
+    <span class="hljs-attr">data</span>: featureArray,
+    width,
+    height,
+    <span class="hljs-attr">domain</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>],
+    <span class="hljs-attr">colorScale</span>: <span class="hljs-string">"greys"</span>
+  });
+
+  plot.<span class="hljs-title function_">render</span>();
+
+  <span class="hljs-title function_">display</span>(context.<span class="hljs-property">canvas</span>);
+})()
+</code></pre>
+<div class="observablehq observablehq--block"><!--:0b9bf8d5:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> archives = [
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2000.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2001.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2002.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2003.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2004.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2005.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2006.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2007.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2008.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2009.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2010.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2011.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2013.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2014.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2015.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2016.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2017.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2018.zip"</span>,
+  <span class="hljs-string">"https://s3.amazonaws.com/geospatial.data/nepal/icimod/nlcms_2019.zip"</span>,
+]
+</code></pre>
+<div class="observablehq observablehq--block"><!--:5db8f139:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">import</span> <span class="hljs-title class_">JSZip</span> <span class="hljs-keyword">from</span> <span class="hljs-string">"npm:jszip"</span>;
+</code></pre>
+<div class="observablehq observablehq--block"><!--:cccb8739:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> zip = <span class="hljs-title function_">display</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">JSZip</span>());
+</code></pre>
+<div class="observablehq observablehq--block"><!--:7b5d96d0:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> zipreader = <span class="hljs-title function_">display</span>(<span class="hljs-function">(<span class="hljs-params">fileDescriptor, { type = <span class="hljs-string">"string"</span> } = {}</span>) =&gt;</span>
+  fileDescriptor
+    .<span class="hljs-title function_">arrayBuffer</span>()
+    .<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">d</span> =&gt;</span> zip.<span class="hljs-title function_">loadAsync</span>(d))
+    .<span class="hljs-title function_">then</span>(
+      <span class="hljs-function">(<span class="hljs-params">{ files }</span>) =&gt;</span>
+        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>(files).<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> [f, files[f].<span class="hljs-title function_">async</span>(type)]))
+    ))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:5bc7714d:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> archive_reader = <span class="hljs-title function_">display</span>(<span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(archive_select).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">z</span>) =&gt;</span> <span class="hljs-title function_">zipreader</span>(z, { <span class="hljs-attr">type</span>: <span class="hljs-string">"arraybuffer"</span> })))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:8a80bb60:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> tiff_file_buffer = <span class="hljs-title function_">display</span>(<span class="hljs-keyword">await</span> archive_reader.<span class="hljs-title function_">get</span>(<span class="hljs-string">"data/LandCover_NP_"</span> + <span class="hljs-title function_">extractYearFromURL</span>(archive_select) + <span class="hljs-string">".tif"</span>))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:943defbc:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> tiff = <span class="hljs-title function_">display</span>(<span class="hljs-keyword">await</span> <span class="hljs-title class_">GeoTIFF</span>.<span class="hljs-title function_">fromArrayBuffer</span>(tiff_file_buffer))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:599cf657:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">extractYearFromURL</span>(<span class="hljs-params">url</span>) {
+  <span class="hljs-keyword">var</span> parts = url.<span class="hljs-title function_">split</span>(<span class="hljs-string">'/'</span>);
+  <span class="hljs-keyword">var</span> fileName = parts[parts.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>];
+  <span class="hljs-keyword">var</span> yearMatch = fileName.<span class="hljs-title function_">match</span>(<span class="hljs-regexp">/\d{4}/</span>);
+  
+  <span class="hljs-keyword">if</span> (yearMatch) {
+    <span class="hljs-keyword">return</span> yearMatch[<span class="hljs-number">0</span>];
+  }
+  
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>; <span class="hljs-comment">// or any other default value you prefer</span>
+}
+</code></pre>
+<div class="observablehq observablehq--block"><!--:1ffe8df5:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> image = <span class="hljs-title function_">display</span>(<span class="hljs-keyword">await</span> tiff.<span class="hljs-title function_">getImage</span>())
+</code></pre>
+<div class="observablehq observablehq--block"><!--:b29d09d3:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> image_data = <span class="hljs-title function_">display</span>(<span class="hljs-keyword">await</span> image.<span class="hljs-title function_">readRasters</span>({ width, height }))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:5fa98af6:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> imageAspectRatio = <span class="hljs-title function_">display</span>(image.<span class="hljs-title function_">getWidth</span>() / image.<span class="hljs-title function_">getHeight</span>())
+</code></pre>
+<div class="observablehq observablehq--block"><!--:66658ec1:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> height = <span class="hljs-title function_">display</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(width / imageAspectRatio))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:25a65315:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-title class_">GeoTIFF</span> <span class="hljs-keyword">from</span> <span class="hljs-string">"npm:geotiff"</span>;
+</code></pre>
+<div class="observablehq observablehq--block"><!--:9ce0c9d5:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> plotty = <span class="hljs-title function_">display</span>(<span class="hljs-keyword">await</span> <span class="hljs-keyword">import</span>(<span class="hljs-string">"https://cdn.skypack.dev/plotty@0.4.9?min"</span>))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:98328bd5:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> featureArray = <span class="hljs-title function_">display</span>(image_data[<span class="hljs-number">0</span>].<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">d</span>) =&gt;</span> (feature.<span class="hljs-title function_">includes</span>(d) ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>)))
+</code></pre>
+<div class="observablehq observablehq--block"><!--:6660dbb9:--></div>
+<pre data-language="js"><code class="language-js"><span class="hljs-keyword">const</span> featureBitmap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>([
+  [<span class="hljs-string">"Waterbody"</span>, <span class="hljs-number">1</span>],
+  [<span class="hljs-string">"Glacier"</span>, <span class="hljs-number">2</span>],
+  [<span class="hljs-string">"Snow"</span>, <span class="hljs-number">3</span>],
+  [<span class="hljs-string">"Forest"</span>, <span class="hljs-number">4</span>],
+  [<span class="hljs-string">"Riverbed"</span>, <span class="hljs-number">5</span>],
+  [<span class="hljs-string">"Built-up area"</span>, <span class="hljs-number">6</span>],
+  [<span class="hljs-string">"Cropland"</span>, <span class="hljs-number">7</span>],
+  [<span class="hljs-string">"Bare soil"</span>, <span class="hljs-number">8</span>],
+  [<span class="hljs-string">"Bare rock"</span>, <span class="hljs-number">9</span>],
+  [<span class="hljs-string">"Grassland"</span>, <span class="hljs-number">10</span>],
+  [<span class="hljs-string">"Other wooded land"</span>, <span class="hljs-number">11</span>]
+])
+</code></pre>
+<hr>
+<h3 id="source%3A-icimod-%7C-land-cover-of-nepal" tabindex="-1"><a class="observablehq-header-anchor" href="#source%3A-icimod-%7C-land-cover-of-nepal">Source: ICIMOD | <a href="http://rds.icimod.org/Home/DataDetail?metadataId=1972729" target="_blank" rel="noopener noreferrer">Land cover of Nepal</a></a></h3>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:1a036658:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:4791f072:--></div>
+<hr>
+<!-- ## Imports & Helpers -->
+</main>
+<footer id="observablehq-footer">
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-06-21T17:14:24">Jun 21, 2024</a>.</div>
+</footer>
+</div>
