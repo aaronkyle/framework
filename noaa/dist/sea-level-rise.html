@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>NOAA Sea Level Rise | NOAA Data Visualizations</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.css">
+<link rel="modulepreload" href="./_observablehq/client.js">
+<link rel="modulepreload" href="./_observablehq/runtime.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.js">
+<link rel="modulepreload" href="./_npm/d3-require@1.3.0/_esm.js">
+<link rel="modulepreload" href="./_npm/htl@0.3.1/_esm.js">
+<link rel="icon" href="./_file/observable.1af93621.png" type="image/png" sizes="32x32">
+<script type="module">
+
+import {define} from "./_observablehq/client.js";
+
+define({id: "9799f3bd", outputs: ["require","L","esri"], body: async () => {
+const {require} = await import("./_npm/d3-require@1.3.0/_esm.js");
+// Import Leaflet first
+const L = await require("leaflet@1.9.4");
+
+// Import ESRI Leaflet, ensuring it has a reference to Leaflet
+const esri = await require("esri-leaflet@3.0.12");
+
+// Attach esri to the Leaflet instance
+L.esri = esri;
+return {require,L,esri};
+}});
+
+define({id: "fe83950e", inputs: ["display","html","width","L","OSM_Layer","World_Imagery","World_Topo","slr_0ft","slr_1ft","slr_2ft","slr_3ft","slr_4ft","slr_5ft","slr_6ft","slr_7ft","slr_8ft","slr_9ft","slr_10ft"], outputs: ["map_slr"], body: (display,html,width,L,OSM_Layer,World_Imagery,World_Topo,slr_0ft,slr_1ft,slr_2ft,slr_3ft,slr_4ft,slr_5ft,slr_6ft,slr_7ft,slr_8ft,slr_9ft,slr_10ft) => {
+const map_slr = (() => {
+  const container = display(html`<div style="width:${width}px;height:${
+    width / 1.6
+  }px">`);
+  //yield container;
+
+  const map = L.map(container).setView([42.3650074, -71.0247722], 14);
+
+  const controlLayers = new L.control.layers(
+    {
+      "Open Street Maps": OSM_Layer(),
+      "World Imagery": World_Imagery(),
+      "World Topo Map": World_Topo().addTo(map)
+    },
+    {
+      slr_0ft: slr_0ft(),
+      slr_1ft: slr_1ft(),
+      slr_2ft: slr_2ft().addTo(map),
+      slr_3ft: slr_3ft(),
+      slr_4ft: slr_4ft(),
+      slr_5ft: slr_5ft().addTo(map),
+      slr_6ft: slr_6ft(),
+      slr_7ft: slr_7ft(),
+      slr_8ft: slr_8ft(),
+      slr_9ft: slr_9ft(),
+      slr_10ft: slr_10ft()
+    },
+    { position: "topright", collapsed: false }
+  );
+
+  map.addControl(controlLayers);
+})()
+return {map_slr};
+}});
+
+define({id: "65187333", inputs: ["display","html","width","L","OSM_Layer","World_Imagery","World_Topo","conf_0ft","conf_1ft","conf_2ft","conf_3ft","conf_4ft","conf_5ft","conf_6ft","conf_7ft","conf_8ft","conf_9ft","conf_10ft"], outputs: ["map_conf"], body: (display,html,width,L,OSM_Layer,World_Imagery,World_Topo,conf_0ft,conf_1ft,conf_2ft,conf_3ft,conf_4ft,conf_5ft,conf_6ft,conf_7ft,conf_8ft,conf_9ft,conf_10ft) => {
+const map_conf = (() => {
+  const container = display(html`<div style="width:${width}px;height:${
+    width / 1.6
+  }px">`);
+  // yield container;
+
+  const map = L.map(container).setView([42.3650074, -71.0247722], 14);
+
+  const controlLayers = new L.control.layers(
+    {
+      "Open Street Maps": OSM_Layer(),
+      "World Imagery": World_Imagery(),
+      "World Topo Map": World_Topo().addTo(map)
+    },
+    {
+      conf_0ft: conf_0ft().addTo(map),
+      conf_1ft: conf_1ft(),
+      conf_2ft: conf_2ft(),
+      conf_3ft: conf_3ft(),
+      conf_4ft: conf_4ft(),
+      conf_5ft: conf_5ft().addTo(map),
+      conf_6ft: conf_6ft(),
+      conf_7ft: conf_7ft(),
+      conf_8ft: conf_8ft(),
+      conf_9ft: conf_9ft(),
+      conf_10ft: conf_10ft()
+    },
+    { position: "topright", collapsed: false }
+  );
+
+  map.addControl(controlLayers);
+})()
+return {map_conf};
+}});
+
+define({id: "b7569182", inputs: ["viewLayer","conf_10ft","display"], body: async (viewLayer,conf_10ft,display) => {
+display(await(
+viewLayer(conf_10ft())
+))
+}});
+
+define({id: "9cc2195e", inputs: ["L"], outputs: ["slr_0ft"], body: (L) => {
+const slr_0ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_0ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_0ft};
+}});
+
+define({id: "c6f3fb60", inputs: ["viewLayer","slr_0ft","display"], body: async (viewLayer,slr_0ft,display) => {
+display(await(
+viewLayer(slr_0ft())
+))
+}});
+
+define({id: "621d535a", inputs: ["L"], outputs: ["slr_1ft"], body: (L) => {
+const slr_1ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_1ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_1ft};
+}});
+
+define({id: "31e81fc8", inputs: ["viewLayer","slr_1ft","display"], body: async (viewLayer,slr_1ft,display) => {
+display(await(
+viewLayer(slr_1ft())
+))
+}});
+
+define({id: "ab12267a", inputs: ["L"], outputs: ["slr_2ft"], body: (L) => {
+const slr_2ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_2ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_2ft};
+}});
+
+define({id: "ad73e01e", inputs: ["viewLayer","slr_2ft","display"], body: async (viewLayer,slr_2ft,display) => {
+display(await(
+viewLayer(slr_2ft())
+))
+}});
+
+define({id: "cd3cfd62", inputs: ["L"], outputs: ["slr_3ft"], body: (L) => {
+const slr_3ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_3ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_3ft};
+}});
+
+define({id: "6125935d", inputs: ["viewLayer","slr_3ft","display"], body: async (viewLayer,slr_3ft,display) => {
+display(await(
+viewLayer(slr_3ft())
+))
+}});
+
+define({id: "950b49e7", inputs: ["L"], outputs: ["slr_4ft"], body: (L) => {
+const slr_4ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_4ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_4ft};
+}});
+
+define({id: "d1232b56", inputs: ["viewLayer","slr_4ft","display"], body: async (viewLayer,slr_4ft,display) => {
+display(await(
+viewLayer(slr_4ft())
+))
+}});
+
+define({id: "7217133c", inputs: ["L"], outputs: ["slr_5ft"], body: (L) => {
+const slr_5ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_5ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_5ft};
+}});
+
+define({id: "ca080923", inputs: ["viewLayer","slr_5ft","display"], body: async (viewLayer,slr_5ft,display) => {
+display(await(
+viewLayer(slr_5ft())
+))
+}});
+
+define({id: "4fb27b42", inputs: ["L"], outputs: ["slr_6ft"], body: (L) => {
+const slr_6ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_6ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_6ft};
+}});
+
+define({id: "76b04f98", inputs: ["viewLayer","slr_6ft","display"], body: async (viewLayer,slr_6ft,display) => {
+display(await(
+viewLayer(slr_6ft())
+))
+}});
+
+define({id: "c8db3301", inputs: ["L"], outputs: ["slr_7ft"], body: (L) => {
+const slr_7ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_7ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_7ft};
+}});
+
+define({id: "bb8ffecb", inputs: ["viewLayer","slr_7ft","display"], body: async (viewLayer,slr_7ft,display) => {
+display(await(
+viewLayer(slr_7ft())
+))
+}});
+
+define({id: "0f966a97", inputs: ["L"], outputs: ["slr_8ft"], body: (L) => {
+const slr_8ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_8ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_8ft};
+}});
+
+define({id: "bbe6aac8", inputs: ["viewLayer","slr_8ft","display"], body: async (viewLayer,slr_8ft,display) => {
+display(await(
+viewLayer(slr_8ft())
+))
+}});
+
+define({id: "5b2f01cc", inputs: ["L"], outputs: ["slr_9ft"], body: (L) => {
+const slr_9ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_9ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_9ft};
+}});
+
+define({id: "dbdea512", inputs: ["viewLayer","slr_9ft","display"], body: async (viewLayer,slr_9ft,display) => {
+display(await(
+viewLayer(slr_9ft())
+))
+}});
+
+define({id: "97086801", inputs: ["L"], outputs: ["slr_10ft"], body: (L) => {
+const slr_10ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_10ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {slr_10ft};
+}});
+
+define({id: "f8c93389", inputs: ["viewLayer","slr_10ft","display"], body: async (viewLayer,slr_10ft,display) => {
+display(await(
+viewLayer(slr_10ft())
+))
+}});
+
+define({id: "03d14f84", inputs: ["L"], outputs: ["conf_0ft"], body: (L) => {
+const conf_0ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_0ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_0ft};
+}});
+
+define({id: "36127aa1", inputs: ["viewLayer","conf_0ft","display"], body: async (viewLayer,conf_0ft,display) => {
+display(await(
+viewLayer(conf_0ft())
+))
+}});
+
+define({id: "2c8e827b", inputs: ["L"], outputs: ["conf_1ft"], body: (L) => {
+const conf_1ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_1ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_1ft};
+}});
+
+define({id: "72a29fe1", inputs: ["viewLayer","conf_1ft","display"], body: async (viewLayer,conf_1ft,display) => {
+display(await(
+viewLayer(conf_1ft())
+))
+}});
+
+define({id: "927724f7", inputs: ["L"], outputs: ["conf_2ft"], body: (L) => {
+const conf_2ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_2ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_2ft};
+}});
+
+define({id: "87f13fa2", inputs: ["viewLayer","conf_2ft","display"], body: async (viewLayer,conf_2ft,display) => {
+display(await(
+viewLayer(conf_2ft())
+))
+}});
+
+define({id: "6487d2e5", inputs: ["L"], outputs: ["conf_3ft"], body: (L) => {
+const conf_3ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_3ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_3ft};
+}});
+
+define({id: "4d19ee4c", inputs: ["viewLayer","conf_3ft","display"], body: async (viewLayer,conf_3ft,display) => {
+display(await(
+viewLayer(conf_3ft())
+))
+}});
+
+define({id: "9b3de699", inputs: ["L"], outputs: ["conf_4ft"], body: (L) => {
+const conf_4ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_4ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_4ft};
+}});
+
+define({id: "02b89c49", inputs: ["viewLayer","conf_4ft","display"], body: async (viewLayer,conf_4ft,display) => {
+display(await(
+viewLayer(conf_4ft())
+))
+}});
+
+define({id: "6c860caa", inputs: ["L"], outputs: ["conf_5ft"], body: (L) => {
+const conf_5ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_5ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_5ft};
+}});
+
+define({id: "172218b6", inputs: ["viewLayer","conf_5ft","display"], body: async (viewLayer,conf_5ft,display) => {
+display(await(
+viewLayer(conf_5ft())
+))
+}});
+
+define({id: "a6e377d0", inputs: ["L"], outputs: ["conf_6ft"], body: (L) => {
+const conf_6ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_6ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_6ft};
+}});
+
+define({id: "cefee8c9", inputs: ["viewLayer","conf_6ft","display"], body: async (viewLayer,conf_6ft,display) => {
+display(await(
+viewLayer(conf_6ft())
+))
+}});
+
+define({id: "4921f82c", inputs: ["L"], outputs: ["conf_7ft"], body: (L) => {
+const conf_7ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_7ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_7ft};
+}});
+
+define({id: "9d0329ec", inputs: ["viewLayer","conf_7ft","display"], body: async (viewLayer,conf_7ft,display) => {
+display(await(
+viewLayer(conf_7ft())
+))
+}});
+
+define({id: "ade416d9", inputs: ["L"], outputs: ["conf_8ft"], body: (L) => {
+const conf_8ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_8ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_8ft};
+}});
+
+define({id: "2a2ef04b", inputs: ["viewLayer","conf_8ft","display"], body: async (viewLayer,conf_8ft,display) => {
+display(await(
+viewLayer(conf_8ft())
+))
+}});
+
+define({id: "b3877099", inputs: ["L"], outputs: ["conf_9ft"], body: (L) => {
+const conf_9ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_9ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_9ft};
+}});
+
+define({id: "78be19ca", inputs: ["viewLayer","conf_9ft","display"], body: async (viewLayer,conf_9ft,display) => {
+display(await(
+viewLayer(conf_9ft())
+))
+}});
+
+define({id: "d993150e", inputs: ["L"], outputs: ["conf_10ft"], body: (L) => {
+const conf_10ft = () =>
+  L.tileLayer(
+    "https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_10ft/MapServer/tile/{z}/{y}/{x}",
+    {
+      size: "256,256",
+      format: "jpgpng",
+      bboxSR: "3857",
+      imageSR: "3857",
+      transparent: "true",
+      f: "image",
+      opacity: 0.6
+    }
+  )
+return {conf_10ft};
+}});
+
+define({id: "d1dae53a", inputs: ["L"], outputs: ["OSM_Layer"], body: (L) => {
+const OSM_Layer = () => L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+  {
+    attribution: 'Wikimedia maps beta | &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  }
+)
+return {OSM_Layer};
+}});
+
+define({id: "c028df6a", inputs: ["L"], outputs: ["World_Imagery"], body: (L) => {
+const World_Imagery = () =>
+  L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
+      attribution:
+        'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      maxZoom: 17
+    }
+  )
+return {World_Imagery};
+}});
+
+define({id: "54b6102c", inputs: ["L"], outputs: ["World_Topo"], body: (L) => {
+const World_Topo = () => L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    {
+      attribution:
+        'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+      maxZoom: 17
+    }
+  )
+return {World_Topo};
+}});
+
+define({id: "c867bfc1", inputs: ["html","viewLayerDefaults","L"], outputs: ["viewLayer"], body: (html,viewLayerDefaults,L) => {
+// Helper to quickly preview a single layer
+function viewLayer(layer, options = {}) {
+  const {
+    zoom, lat, lon, width, height,
+    container = html`<div style="width:${width}px;height:${height}px">`,
+  } = {...viewLayerDefaults, ...options};
+  
+  requestAnimationFrame(() => {
+    const map = L.map(container).setView([lat, lon], zoom);
+    layer.addTo(map);
+  });
+
+  return container;
+}
+return {viewLayer};
+}});
+
+define({id: "2f5deb14", outputs: ["viewLayerDefaults"], body: () => {
+const viewLayerDefaults = ({
+  width: 400,
+  height: 250,
+  lat: 42.3650074,
+  lon: -71.0247722,
+  zoom: 12
+})
+return {viewLayerDefaults};
+}});
+
+define({id: "bf4f2009", body: () => {
+//L = {
+//  const L = require("leaflet@1.7.1");
+//  const n = html`<link href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" rel=stylesheet>`;
+//  document.head.appendChild(n);
+//  invalidation.then(() => n.remove());
+//  return L;
+//}
+}});
+
+</script>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">NOAA Data Visualizations</a></li>
+  </ol>
+  <ol>
+    <li class="observablehq-link"><a href="./urban-heat-islands">Urban Heat Islands</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./sea-level-rise">Sea Level Rise</a></li>
+    <li class="observablehq-link"><a href="./3Band-CIR-8Bit-Imagery">3Band CIR 8Bit Imagery</a></li>
+  </ol>
+</nav>
+<script>{Object.assign(document.createElement("a"),{href:""}).password&&location.replace(location.href);const e=document.querySelector("#observablehq-sidebar"),t=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?t.checked=r==="true":t.indeterminate=!0;for(const o of document.querySelectorAll("#observablehq-sidebar summary")){const s=o.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${o.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#helpers">Helpers</a></li>
+<li class="observablehq-secondary-link"><a href="#references">References</a></li>
+<li class="observablehq-secondary-link"><a href="#acknowledgements">Acknowledgements</a></li>
+</ol>
+</nav>
+</aside>
+<div id="observablehq-center">
+<main id="observablehq-main" class="observablehq">
+<h1 id="noaa-sea-level-rise" tabindex="-1"><a class="observablehq-header-anchor" href="#noaa-sea-level-rise">NOAA Sea Level Rise</a></h1>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<div class="observablehq observablehq--block"><!--:9799f3bd:--></div>
+<p>This notebook loads <a href="https://coast.noaa.gov/slrdata/" target="_blank" rel="noopener noreferrer">sea level rise data</a> from the US <a href="https://noaa.gov" target="_blank" rel="noopener noreferrer">National Oceanic and Atmospheric Administration</a> (NOAA).  NOAA provides a <a href="https://coast.noaa.gov/slr/" target="_blank" rel="noopener noreferrer">very nice website</a> for viewing these data.  This notebook was created to demonstrate loading and rendering of web mapping service (wms) data <a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/" target="_blank" rel="noopener noreferrer">layers</a> in a notebook to inform custom visualizations.</p>
+<p><em>NOAA Disclaimer:</em></p>
+<p>The data and maps in this tool illustrate the scale of potential flooding, not the exact location, and do not account for erosion, subsidence, or future construction. Water levels are relative to Mean Higher High Water (MHHW) (excludes wind driven tides). The data, maps, and information provided should be used only as a screening-level tool for management decisions. As with all remotely sensed data, all features should be verified with a site visit. The data and maps in this tool are provided “as is,” without warranty to their performance, merchantable state, or fitness for any particular purpose. The entire risk associated with the results and performance of these data is assumed by the user. This tool should be used strictly as a planning reference tool and not for navigation, permitting, or other legal purposes.</p>
+<hr>
+<p>Here's the primary prediction model:</p>
+<div class="observablehq observablehq--block"><!--:fe83950e:--></div>
+<p>And here's an exploration of variations in confidence levels within the model:</p>
+<div class="observablehq observablehq--block"><!--:65187333:--></div>
+<p>Data prepended with `slr` were from a projection model:</p>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:b7569182:--></div>
+<div class="observablehq observablehq--block"><!--:9cc2195e:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:c6f3fb60:--></div>
+<div class="observablehq observablehq--block"><!--:621d535a:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:31e81fc8:--></div>
+<div class="observablehq observablehq--block"><!--:ab12267a:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:ad73e01e:--></div>
+<div class="observablehq observablehq--block"><!--:cd3cfd62:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:6125935d:--></div>
+<div class="observablehq observablehq--block"><!--:950b49e7:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:d1232b56:--></div>
+<div class="observablehq observablehq--block"><!--:7217133c:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:ca080923:--></div>
+<div class="observablehq observablehq--block"><!--:4fb27b42:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:76b04f98:--></div>
+<div class="observablehq observablehq--block"><!--:c8db3301:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:bb8ffecb:--></div>
+<div class="observablehq observablehq--block"><!--:0f966a97:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:bbe6aac8:--></div>
+<div class="observablehq observablehq--block"><!--:5b2f01cc:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:dbdea512:--></div>
+<div class="observablehq observablehq--block"><!--:97086801:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:f8c93389:--></div>
+<p>Data prepended with `conf` were created to help identfy errors in the SLR dataset:</p>
+<div class="observablehq observablehq--block"><!--:03d14f84:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:36127aa1:--></div>
+<div class="observablehq observablehq--block"><!--:2c8e827b:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:72a29fe1:--></div>
+<div class="observablehq observablehq--block"><!--:927724f7:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:87f13fa2:--></div>
+<div class="observablehq observablehq--block"><!--:6487d2e5:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:4d19ee4c:--></div>
+<div class="observablehq observablehq--block"><!--:9b3de699:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:02b89c49:--></div>
+<div class="observablehq observablehq--block"><!--:6c860caa:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:172218b6:--></div>
+<div class="observablehq observablehq--block"><!--:a6e377d0:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:cefee8c9:--></div>
+<div class="observablehq observablehq--block"><!--:4921f82c:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:9d0329ec:--></div>
+<div class="observablehq observablehq--block"><!--:ade416d9:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:2a2ef04b:--></div>
+<div class="observablehq observablehq--block"><!--:b3877099:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:78be19ca:--></div>
+<div class="observablehq observablehq--block"><!--:d993150e:--></div>
+<div class="observablehq observablehq--block"><!--:d1dae53a:--></div>
+<div class="observablehq observablehq--block"><!--:c028df6a:--></div>
+<div class="observablehq observablehq--block"><!--:54b6102c:--></div>
+<h3 id="not-yet-rendered" tabindex="-1"><a class="observablehq-header-anchor" href="#not-yet-rendered">Not Yet Rendered</a></h3>
+<ul>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/Data_Extent/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/Data_Extent</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/Flood_Frequency/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/Flood_Frequency</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/HistoricMaps_3ftSLR/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/HistoricMaps_3ftSLR</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/HistoricMaps/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/HistoricMaps</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_000/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_000</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_050/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_050</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_1000/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_1000</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_100/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_100</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_150/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_150</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_200/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_200</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_250/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_250</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_300/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_300</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_350/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_350</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_400/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_400</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_450/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_450</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_500/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_500</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_550/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_550</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_600/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_600</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_650/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_650</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_700/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_700</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_750/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_750</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_800/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_800</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_850/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_850</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_900/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_900</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/marsh_950/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/marsh_950</a> (MapServer)</li>
+<li><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/Point_Layers/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/Point_Layers</a> (MapServer)</li>
+</ul>
+<h3 id="rendered" tabindex="-1"><a class="observablehq-header-anchor" href="#rendered">Rendered</a></h3>
+<ul>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_0ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_0ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_10ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_10ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_1ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_1ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_2ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_2ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_3ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_3ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_4ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_4ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_5ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_5ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_6ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_6ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_7ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_7ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_8ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_8ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/conf_9ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/conf_9ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_0ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_0ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_10ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_10ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_1ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_1ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_2ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_2ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_3ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_3ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_4ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_4ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_5ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_5ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_6ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_6ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_7ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_7ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_8ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_8ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_9ft/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/slr_9ft</a> (MapServer)</p>
+</li>
+<li>
+<p><a href="https://coast.noaa.gov/arcgis/rest/services/dc_slr/SOVI/MapServer" target="_blank" rel="noopener noreferrer">dc_slr/SOVI</a> (MapServer)</p>
+</li>
+</ul>
+<hr>
+<h2 id="helpers" tabindex="-1"><a class="observablehq-header-anchor" href="#helpers">Helpers</a></h2>
+<div class="observablehq observablehq--block"><!--:c867bfc1:--></div>
+<div class="observablehq observablehq--block"><!--:2f5deb14:--></div>
+<div class="observablehq observablehq--block"><!--:bf4f2009:--></div>
+<hr>
+<h2 id="references" tabindex="-1"><a class="observablehq-header-anchor" href="#references">References</a></h2>
+<ul>
+<li><a href="https://observablehq.com/@ambassadors/3band_cir_8bit_imagery" target="_blank" rel="noopener noreferrer">https://observablehq.com/@ambassadors/3band_cir_8bit_imagery</a></li>
+</ul>
+<hr>
+<h2 id="acknowledgements" tabindex="-1"><a class="observablehq-header-anchor" href="#acknowledgements">Acknowledgements</a></h2>
+<p>The motivation for creating this notebook comes from the conversation, <a href="https://observablehq.com/@ambassadors/data-science-for-environmental-research-and-advocacy" target="_blank" rel="noopener noreferrer">"Data Science for Environmental Research (and Advocacy)"</a>. <strong>All the heavy lifting getting these data layers to render is thanks to <a href="https://observablehq.com/@mootari" target="_blank" rel="noopener noreferrer">@mootari</a>.</strong></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./urban-heat-islands"><span>Urban Heat Islands</span></a><a rel="next" href="./3Band-CIR-8Bit-Imagery"><span>3Band CIR 8Bit Imagery</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-06-23T07:55:42">Jun 23, 2024</a>.</div>
+</footer>
+</div>
